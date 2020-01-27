@@ -43,7 +43,7 @@ public class IronSourceBannerView implements PlatformView, BannerListener {
         // choose banner size
         ISBannerSize size = ISBannerSize.BANNER;
         final int height = (int) args.get("height");
-        final int width = (int) args.get("height");
+        final int width = (int) args.get("width");
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, height);
         // instantiate IronSourceBanner object, using the IronSource.createBanner API
         mIronSourceBannerLayout = IronSource.createBanner(activity, size);

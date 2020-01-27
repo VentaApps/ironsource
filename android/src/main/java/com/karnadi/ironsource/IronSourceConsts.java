@@ -13,6 +13,8 @@ public class IronSourceConsts {
     static final String IS_OFFERWALL_AVAILABLE = "isOfferwallAvailable";
     static final String SHOW_OFFERWALL = "showOfferwall";
     static final String SHOW_REWARDED_VIDEO = "showRewardedVideo";
+    static final String LOAD_BANNER = "loadBanner";
+    static final String DESTROY_BANNER = "destroyBanner";
 
 //    Listener
     static final String ON_REWARDED_VIDEO_AD_OPENED = "onRewardedVideoAdOpened";

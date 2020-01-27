@@ -36,19 +36,23 @@ class IronSource {
   }
 
   static Future<Null> loadInterstitial() async {
-    await _channel.invokeMethod('loadInterstitial');
+    await _channel
+        .invokeMethod('loadInterstitial')
+        .then((value) => print(value));
   }
 
-  static Future<Null> showInterstitial() async {
-    await _channel.invokeMethod('showInterstitial');
+  static Future<Null> showInterstitial(String placementName) async {  // I Add This Argument.
+    await _channel.invokeMethod('showInterstitial',{'placementName': placementName});
   }
 
-  static Future<Null> showRewardedVideol() async {
-    await _channel.invokeMethod('showRewardedVideo');
+  static Future<Null> showRewardedVideol(String placementName) async {
+    // I Add This Argument.
+    return await _channel
+        .invokeMethod('showRewardedVideo', {'placementName': placementName});
   }
 
-  static Future<Null> showOfferwall() async {
-    await _channel.invokeMethod('showOfferwall');
+  static Future<Null> showOfferwall(String placementName) async {  // I Add This Argument.
+    await _channel.invokeMethod('showOfferwall', {'placementName': placementName});
   }
 
   static Future<bool> isInterstitialReady() async {
@@ -69,6 +73,25 @@ class IronSource {
 
   static Future<bool> isOfferwallAvailable() async {
     return await _channel.invokeMethod('isOfferwallAvailable');
+  }
+
+  // I Add This Function.
+  static Future<Map> getRewardedVideoPlacementInfo(String placementName) async {
+    return await _channel.invokeMethod(
+        'getRewardedVideoPlacementInfo', {'placementName': placementName});
+  }
+
+  // I Add This Function.
+  static Future<Null> getInterstitialPlacementInfo(String placementName) async {
+    await _channel.invokeMethod(
+        'getInterstitialPlacementInfo', {'placementName': placementName});
+  }
+
+  // I Add This Function.
+  static Future<Null> isInterstitialPlacementCapped(
+      String placementName) async {
+    await _channel.invokeMethod(
+        'isInterstitialPlacementCapped', {'placementName': placementName});
   }
 }
 

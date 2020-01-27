@@ -11,10 +11,14 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.ironsource.adapters.supersonicads.SupersonicConfig;
+import com.ironsource.mediationsdk.ISBannerSize;
 import com.ironsource.mediationsdk.IronSource;
+import com.ironsource.mediationsdk.IronSourceBannerLayout;
 import com.ironsource.mediationsdk.integration.IntegrationHelper;
 import com.ironsource.mediationsdk.logger.IronSourceError;
+import com.ironsource.mediationsdk.model.InterstitialPlacement;
 import com.ironsource.mediationsdk.model.Placement;
+import com.ironsource.mediationsdk.sdk.BannerListener;
 import com.ironsource.mediationsdk.sdk.InterstitialListener;
 import com.ironsource.mediationsdk.sdk.OfferwallListener;
 import com.ironsource.mediationsdk.sdk.RewardedVideoListener;
@@ -49,7 +53,6 @@ public class IronsourcePlugin implements MethodCallHandler, InterstitialListener
 
         final MethodChannel interstitialAdChannel = new MethodChannel(registrar.messenger(), IronSourceConsts.INTERSTITIAL_CHANNEL);
 
-
         registrar.platformViewRegistry().registerViewFactory(IronSourceConsts.BANNER_AD_CHANNEL, new IronSourceBanner(registrar.activity(), registrar.messenger()));
     }
 
@@ -59,11 +62,14 @@ public class IronsourcePlugin implements MethodCallHandler, InterstitialListener
         if (call.method.equals(IronSourceConsts.INIT) && call.hasArgument("appKey")) {
             initialize(call.<String>argument("appKey"));
             result.success(null);
+        } else if (call.method.equals(IronSourceConsts.LOAD_BANNER)) {
+        } else if (call.method.equals(IronSourceConsts.DESTROY_BANNER)) {
         } else if (call.method.equals(IronSourceConsts.LOAD_INTERSTITIAL)) {
             IronSource.loadInterstitial();
             result.success(null);
         } else if (call.method.equals(IronSourceConsts.SHOW_INTERSTITIAL)) {
-            IronSource.showInterstitial();
+            String placementName = call.argument("placementName");  // i Add this Argument.
+            IronSource.showInterstitial(placementName);
             result.success(null);
         } else if (call.method.equals(IronSourceConsts.IS_INTERSTITIAL_READY)) {
             result.success(IronSource.isInterstitialReady());
@@ -72,10 +78,12 @@ public class IronsourcePlugin implements MethodCallHandler, InterstitialListener
         } else if (call.method.equals(IronSourceConsts.IS_OFFERWALL_AVAILABLE)) {
             result.success(IronSource.isOfferwallAvailable());
         } else if (call.method.equals(IronSourceConsts.SHOW_OFFERWALL)) {
-            IronSource.showOfferwall();
+            String placementName = call.argument("placementName");  // I Add This Argument.
+            IronSource.showOfferwall(placementName);
             result.success(null);
         } else if (call.method.equals(IronSourceConsts.SHOW_REWARDED_VIDEO)) {
-            IronSource.showRewardedVideo();
+            String placementName = call.argument("placementName");  // I Add This Line.
+            IronSource.showRewardedVideo(placementName);
             result.success(null);
         } else if (call.method.equals("activityResumed")) {
             IronSource.onResume(mActivity);
@@ -89,11 +97,30 @@ public class IronsourcePlugin implements MethodCallHandler, InterstitialListener
         } else if (call.method.equals("validateIntegration")) {
             IntegrationHelper.validateIntegration(mActivity);
             result.success(null);
-        } else if(call.method.equals("setUserId")){
+        } else if (call.method.equals("setUserId")) {
             IronSource.setUserId(call.<String>argument("userId"));
             result.success(null);
         } else if (call.method.equals("getAdvertiserId")) {
             result.success(IronSource.getAdvertiserId(mActivity));
+        } else if (call.method.equals("getRewardedVideoPlacementInfo")) {    // I Add this Function.
+            String placementName = call.argument("placementName");
+            Placement placement = IronSource.getRewardedVideoPlacementInfo(placementName);
+            if (placement != null) {
+                String rewardName = placement.getRewardName();
+                int rewardAmount = placement.getRewardAmount();
+                Map<String, Object> arguments = new HashMap();
+                arguments.put("rewardName", rewardName);
+                arguments.put("rewardAmount", rewardAmount);
+                result.success(arguments);
+            }
+        } else if (call.method.equals("getInterstitialPlacementInfo")) {   // I Add this Function.
+            String placementName = call.argument("placementName");
+            IronSource.getInterstitialPlacementInfo(placementName);
+            result.success(null);
+        } else if (call.method.equals("isInterstitialPlacementCapped")) {   // I Add this Function.
+            String placementName = call.argument("placementName");
+            IronSource.isInterstitialPlacementCapped(placementName);
+            result.success(null);
         } else {
             result.notImplemented();
         }
@@ -109,7 +136,6 @@ public class IronsourcePlugin implements MethodCallHandler, InterstitialListener
         IronSource.init(mActivity, appKey);
 
     }
-
 
     // Interstitial Listener
 

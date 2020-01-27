@@ -10,7 +10,8 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with IronSourceListener , WidgetsBindingObserver{
+class _MyAppState extends State<MyApp>
+    with IronSourceListener, WidgetsBindingObserver {
   final String appKey = "85460dcd";
 
   bool rewardeVideoAvailable = false,
@@ -25,24 +26,22 @@ class _MyAppState extends State<MyApp> with IronSourceListener , WidgetsBindingO
   }
 
   @override
-void didChangeAppLifecycleState(AppLifecycleState state) { 
- switch(state){
-
-   case AppLifecycleState.resumed:
-     IronSource.activityResumed();
-     break;
-   case AppLifecycleState.inactive:
-     // TODO: Handle this case.
-     break;
-   case AppLifecycleState.paused:
-     // TODO: Handle this case.
-      IronSource.activityPaused();
-     break;
-   case AppLifecycleState.suspending:
-     // TODO: Handle this case.
-     break;
- }
-}
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        IronSource.activityResumed();
+        break;
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.paused:
+        IronSource.activityPaused();
+        break;
+      //  case AppLifecycleState.suspending:
+      //    break;
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
 
   void init() async {
     var userId = await IronSource.getAdvertiserId();
@@ -58,9 +57,9 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     IronSource.loadInterstitial();
   }
 
-  void showInterstitial() async {
+  void showInterstitial(String placementName) async {
     if (await IronSource.isInterstitialReady()) {
-      IronSource.showInterstitial();
+      IronSource.showInterstitial(placementName);
     } else {
       print(
         "Interstial is not ready. use 'Ironsource.loadInterstial' before showing it",
@@ -68,17 +67,17 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     }
   }
 
-  void showOfferwall() async {
+  void showOfferwall(String placementName) async {
     if (await IronSource.isOfferwallAvailable()) {
-      IronSource.showOfferwall();
+      IronSource.showOfferwall(placementName);
     } else {
       print("Offerwall not available");
     }
   }
 
-  void showRewardedVideo() async {
+  void showRewardedVideo(String placementName) async {
     if (await IronSource.isRewardedVideoAvailable()) {
-      IronSource.showRewardedVideol();
+      IronSource.showRewardedVideol(placementName);
     } else {
       print("RewardedVideo not available");
     }
@@ -130,12 +129,13 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
               ),
             ),
 // Banner ad
-            showBanner?
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: IronSourceBannerAd(
-                    keepAlive: true, listener: BannerAdListener()),
-              ):SizedBox()
+            showBanner
+                ? Align(
+                    alignment: Alignment.bottomCenter,
+                    child: IronSourceBannerAd(
+                        keepAlive: true, listener: BannerAdListener()),
+                  )
+                : SizedBox()
           ],
         ),
       ),
@@ -154,7 +154,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 
   @override
   void onInterstitialAdLoadFailed(IronSourceError error) {
-      print("onInterstitialAdLoadFailed : ${error.toString()}");
+    print("onInterstitialAdLoadFailed : ${error.toString()}");
   }
 
   @override
@@ -163,8 +163,6 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       interstitialReady = false;
     });
-
- 
   }
 
   @override
@@ -173,12 +171,10 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       interstitialReady = true;
     });
-  
   }
 
   @override
   void onInterstitialAdShowFailed(IronSourceError error) {
-
     print("onInterstitialAdShowFailed : ${error.toString()}");
     setState(() {
       interstitialReady = false;
@@ -192,13 +188,11 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 
   @override
   void onGetOfferwallCreditsFailed(IronSourceError error) {
-
     print("onGetOfferwallCreditsFailed : ${error.toString()}");
   }
 
   @override
   void onOfferwallAdCredited(OfferwallCredit reward) {
-
     print("onOfferwallAdCredited : $reward");
   }
 
@@ -228,38 +222,31 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 
   @override
   void onRewardedVideoAdClicked(Placement placement) {
-   
     print("onRewardedVideoAdClicked");
   }
 
   @override
   void onRewardedVideoAdClosed() {
     print("onRewardedVideoAdClosed");
-
   }
 
   @override
   void onRewardedVideoAdEnded() {
     print("onRewardedVideoAdEnded");
-
-
   }
 
   @override
   void onRewardedVideoAdOpened() {
     print("onRewardedVideoAdOpened");
-
   }
 
   @override
   void onRewardedVideoAdRewarded(Placement placement) {
-
     print("onRewardedVideoAdRewarded: ${placement.placementName}");
   }
- 
+
   @override
   void onRewardedVideoAdShowFailed(IronSourceError error) {
-  
     print("onRewardedVideoAdShowFailed : ${error.toString()}");
   }
 
@@ -270,7 +257,6 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 
   @override
   void onRewardedVideoAvailabilityChanged(bool available) {
-   
     print("onRewardedVideoAvailabilityChanged : $available");
     setState(() {
       rewardeVideoAvailable = available;
@@ -292,7 +278,6 @@ class BannerAdListener extends IronSourceBannerListener {
   @override
   void onBannerAdLoadFailed(Map<String, dynamic> error) {
     print("onBannerAdLoadFailed");
-
   }
 
   @override
